@@ -2,9 +2,9 @@ public class QuoteController {
     private QuoteView quoteView;
     private QuoteService quoteService;
     
-    public QuoteController() {
-        quoteView = new QuoteView();
-        quoteService = new QuoteService();
+    public QuoteController(QuoteView quoteView, QuoteService quoteService) {
+        this.quoteView = quoteView;
+        this.quoteService = quoteService;
     }
     
     public void run() {
