@@ -12,7 +12,7 @@ public class QuoteController {
         
         while (true) {
             String command = getCommandFromUser();
-            if (command == null || !processCommand(command)) {
+            if (command != null && !processCommand(command)) {
                 break;
             }
         }
