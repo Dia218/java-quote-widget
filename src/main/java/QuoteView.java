@@ -1,11 +1,15 @@
+import java.util.List;
 import java.util.Scanner;
 
 public class QuoteView {
     private final String TITLE = "== 명언 앱 ==\n";
     private final String COMMAND = "\n명령) ";
+    private final String ID_PROMPT = "%s?id=";
+    private final String CONTENT = "명언%s : ";
+    private final String AUTHOR = "작가%s : ";
+    private final String PREVIOUS = "(기존)";
     private final String COMPLETE = "%d번 명언이 %s되었습니다.\n";
-    private final String ERROR_COMMAND = "잘못된 명령어 입니다: ";
-    private final String ERROR_QUOTENUM = "%d번 명언은 존재하지 않습니다.";
+    private final String LIST_HEAD = "번호 / 작가 / 명언\n" + "----------------------\n";
 
     private final Scanner scanner;
 
@@ -17,29 +21,61 @@ public class QuoteView {
         printMessage(TITLE);
     }
 
-    public String requestCommand() throws InvalidCommandException {
-        String command = "";
-        
+    public String requestCommand(){
         printMessage(COMMAND);
-        command = scanner.nextLine().trim();
-        
-        if (!isValidCommand(command)) {
-            throw new InvalidCommandException(ERROR_COMMAND + command);
-        }
-        
-        return command;
+        return scanner.nextLine();
+    }
+    
+    public String requestTargetId(Command command) {
+        printMessage(COMMAND + String.format(ID_PROMPT, command.getValue()));
+        return scanner.nextLine();
+    }
+    
+    public String[] requestRegister() {
+        return new String[]{requestNewContent(),
+                requestNewAuthor()};
+    }
+    
+    public String[] requestUpdate(String[] previousContentAndAuthor) {
+        return new String[]{requestNewContent(previousContentAndAuthor[0]),
+                requestNewAuthor(previousContentAndAuthor[1])};
+    }
+    
+    public void alertSuccess(int id, Command command) {
+        printMessage(String.format(COMPLETE, id, command));
+    }
+    
+    public void displayQuotes(List<String> quotesInfo) {
+        printMessage(LIST_HEAD);
+        quotesInfo.forEach(quote -> printMessage(quote + "\n"));
+    }
+    
+    public void displayErrorMessage(String message) {
+        System.out.println(message);
     }
     
     public void closeScanner() {
         scanner.close();
     }
     
-    private boolean isValidCommand(String command) {
-        return command.equals(Command.REGISTER.getValue()) ||
-                command.equals(Command.DELETE.getValue()) ||
-                command.equals(Command.UPDATE.getValue()) ||
-                command.equals(Command.SELECT.getValue()) ||
-                command.equals(Command.EXIT.getValue());
+    private String requestNewContent() {
+        printMessage(String.format(CONTENT, ""));
+        return scanner.nextLine();
+    }
+    
+    private String requestNewContent(String previousContent) {
+        printMessage(String.format(CONTENT, PREVIOUS) + previousContent + "\n");
+        return requestNewContent();
+    }
+    
+    private String requestNewAuthor() {
+        printMessage(String.format(AUTHOR, ""));
+        return scanner.nextLine();
+    }
+    
+    private String requestNewAuthor(String previousAuthor) {
+        printMessage(String.format(AUTHOR, PREVIOUS) + previousAuthor + "\n");
+        return requestNewAuthor();
     }
     
     private void printMessage(String message) {

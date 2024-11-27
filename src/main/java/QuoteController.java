@@ -1,6 +1,8 @@
+import java.util.Arrays;
+
 public class QuoteController {
-    private QuoteView quoteView;
-    private QuoteService quoteService;
+    private final QuoteView quoteView;
+    private final QuoteService quoteService;
     
     public QuoteController(QuoteView quoteView, QuoteService quoteService) {
         this.quoteView = quoteView;
@@ -11,28 +13,35 @@ public class QuoteController {
         quoteView.showTitle();
         
         while (true) {
-            String command = getCommandFromUser();
-            if (command != null && !processCommand(command)) {
-                break;
+            String command = quoteView.requestCommand().trim();
+            
+            try {
+                validateCommand(command);
+            } catch (InvalidCommandException e) {
+                quoteView.displayErrorMessage(e.getMessage());
+                continue;
             }
+            
+            if(isExit(command)) { break; }
+            processCommand(command);
         }
         
         quoteView.closeScanner();
     }
     
-    private String getCommandFromUser() {
-        try {
-            return quoteView.requestCommand();
-        } catch (InvalidCommandException e) {
-            System.out.println(e.getMessage());
-            return null;
+    private void validateCommand(String targetCommand) throws InvalidCommandException {
+        if (Arrays.stream(Command.values())
+                .map(Command::getValue)
+                .noneMatch(value -> value.equals(targetCommand))) {
+            throw new InvalidCommandException(targetCommand);
         }
     }
     
-    private boolean processCommand(String command) {
-        if (command.equals(Command.EXIT.getValue())) {
-            return false;
-        }
+    private boolean isExit(String command) {
+        return command.equals(Command.EXIT.getValue());
+    }
+    
+    private void processCommand(String command) {
         if (command.equals(Command.REGISTER.getValue())) {
             handleRegister();
         }
@@ -45,22 +54,47 @@ public class QuoteController {
         if (command.equals(Command.SELECT.getValue())) {
             handleSelect();
         }
-        return true;
+        if (command.equals(Command.BUILD.getValue())) {
+            handleBuild();
+        }
     }
     
     private void handleRegister() {
-        // 등록 처리
+        String[] ContentAndAuthor = quoteView.requestRegister();
+        int newId = quoteService.addQuote(ContentAndAuthor[0], ContentAndAuthor[1]);
+        quoteView.alertSuccess(newId, Command.REGISTER);
     }
     
     private void handleDelete() {
-        // 삭제 처리
+        try {
+            int targetId = Integer.parseInt(quoteView.requestTargetId(Command.DELETE));
+            quoteService.removeQuote(quoteService.getQuoteById(targetId));
+            quoteView.alertSuccess(targetId, Command.DELETE);
+        } catch (NumberFormatException e) {
+            quoteView.displayErrorMessage("숫자를 정확히 입력해주세요");
+        } catch (QuoteNotFoundException e) {
+            quoteView.displayErrorMessage(e.getMessage());
+        }
     }
     
     private void handleUpdate() {
-        // 수정 처리
+        try {
+            int targetId = Integer.parseInt(quoteView.requestTargetId(Command.UPDATE));
+            Quote targetQuote = quoteService.getQuoteById(targetId);
+            String[] newContentAndAuthor = quoteView.requestUpdate(targetQuote.getContentAndAuthor());
+            quoteService.updateQuote(targetQuote, newContentAndAuthor[1], newContentAndAuthor[0]);
+        } catch (NumberFormatException e) {
+            quoteView.displayErrorMessage("숫자를 정확히 입력해주세요");
+        } catch (QuoteNotFoundException e) {
+            quoteView.displayErrorMessage(e.getMessage());
+        }
     }
     
     private void handleSelect() {
-        // 목록 처리
+        quoteView.displayQuotes(quoteService.selectQuote());
+    }
+    
+    private void handleBuild() {
+        // 빌드 처리
     }
 }

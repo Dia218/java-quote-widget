@@ -40,13 +40,15 @@ class QuoteControllerTest {
     
     @Test
     void testRun_shouldHandleInvalidCommand() throws InvalidCommandException {
+        String invalidCommandError = "잘못된 명령어 입니다: InvalidCommand";
+        
         when(mockQuoteView.requestCommand())
-                .thenThrow(new InvalidCommandException("잘못된 명령어 입니다: InvalidCommand"))
-                .thenReturn(Command.EXIT.getValue());
+                .thenThrow(new InvalidCommandException(invalidCommandError))
+                .thenReturn("종료");
         
         quoteController.run();
         
-        assertTrue(outputStreamCaptor.toString().contains("잘못된 명령어 입니다: InvalidCommand"));
+        assertTrue(outputStreamCaptor.toString().contains(invalidCommandError));
     }
 
 }

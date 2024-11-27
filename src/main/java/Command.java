@@ -3,7 +3,8 @@ public enum Command {
     DELETE("삭제"),
     UPDATE("수정"),
     SELECT("목록"),
-    EXIT("종료");
+    EXIT("종료"),
+    BUILD("빌드"),;
     
     private final String value;
     
