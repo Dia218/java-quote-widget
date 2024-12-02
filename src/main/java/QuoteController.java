@@ -67,25 +67,21 @@ public class QuoteController {
     
     private void handleDelete() {
         try {
-            int targetId = Integer.parseInt(quoteView.requestTargetId(Command.DELETE));
+            int targetId = parseToIntId(quoteView.requestTargetId(Command.DELETE));
             quoteService.removeQuote(quoteService.getQuoteById(targetId));
             quoteView.alertSuccess(targetId, Command.DELETE);
-        } catch (NumberFormatException e) {
-            quoteView.displayErrorMessage("숫자를 정확히 입력해주세요");
-        } catch (QuoteNotFoundException e) {
+        } catch (InvalidNumberException | QuoteNotFoundException e) {
             quoteView.displayErrorMessage(e.getMessage());
         }
     }
     
     private void handleUpdate() {
         try {
-            int targetId = Integer.parseInt(quoteView.requestTargetId(Command.UPDATE));
+            int targetId = parseToIntId(quoteView.requestTargetId(Command.UPDATE));
             Quote targetQuote = quoteService.getQuoteById(targetId);
             String[] newContentAndAuthor = quoteView.requestUpdate(targetQuote.getContentAndAuthor());
             quoteService.updateQuote(targetQuote, newContentAndAuthor[1], newContentAndAuthor[0]);
-        } catch (NumberFormatException e) {
-            quoteView.displayErrorMessage("숫자를 정확히 입력해주세요");
-        } catch (QuoteNotFoundException e) {
+        } catch (InvalidNumberException | QuoteNotFoundException e) {
             quoteView.displayErrorMessage(e.getMessage());
         }
     }
@@ -97,4 +93,17 @@ public class QuoteController {
     private void handleBuild() {
         // 빌드 처리
     }
+    
+    private int parseToIntId(String input) throws InvalidNumberException {
+        if (input == null || input.trim().isEmpty()) {
+            throw new InvalidNumberException("null");
+        }
+        
+        try {
+            return Integer.parseInt(input.trim());
+        } catch (NumberFormatException e) {
+            throw new InvalidNumberException(input);
+        }
+    }
+    
 }

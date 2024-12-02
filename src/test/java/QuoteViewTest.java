@@ -13,13 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuoteViewTest {
     private QuoteView quoteView;
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
     private final PrintStream originalSystemOut = System.out;
     private final InputStream originalSystemIn = System.in;
     
     @BeforeEach
     public void setUp() {
-        System.setOut(new PrintStream(outContent)); //출력 가로채기
+        System.setOut(new PrintStream(outputStreamCaptor)); //출력 가로채기
     }
     
     @AfterEach
@@ -34,7 +34,7 @@ class QuoteViewTest {
         
         new QuoteView().showTitle();
         
-        Assertions.assertTrue(outContent.toString().contains(expectedTitle));
+        Assertions.assertTrue(outputStreamCaptor.toString().contains(expectedTitle));
     }
     
     @Test
@@ -45,7 +45,7 @@ class QuoteViewTest {
         
         String actualCommand = new QuoteView().requestCommand();
         
-        assertTrue(outContent.toString().contains(expectedDisplay));
+        assertTrue(outputStreamCaptor.toString().contains(expectedDisplay));
         Assertions.assertEquals(expectedCommand, actualCommand);
     }
     
@@ -94,7 +94,7 @@ class QuoteViewTest {
         
         new QuoteView().alertSuccess(1, Command.REGISTER);
         
-        Assertions.assertTrue(outContent.toString().contains(expectedMessage));
+        Assertions.assertTrue(outputStreamCaptor.toString().contains(expectedMessage));
     }
     
     @Test
@@ -111,6 +111,6 @@ class QuoteViewTest {
         
         new QuoteView().displayQuotes(quotesInfo);
         
-        Assertions.assertEquals(outContent.toString(), expectedQuotes);
+        Assertions.assertEquals(outputStreamCaptor.toString(), expectedQuotes);
     }
 }
