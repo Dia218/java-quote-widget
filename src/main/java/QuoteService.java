@@ -13,7 +13,7 @@ public class QuoteService {
         //this.quotes = quoteRepository.readQuotesFile();
     }
     
-    public int addQuote(String content, String author) {
+    public int addQuote(String author, String content) {
         int id = getNextId();
         quotes.put(id, new Quote(id, author, content));
         return id;
@@ -29,7 +29,7 @@ public class QuoteService {
     
     public List<String> selectQuote() {
         return quotes.entrySet().stream()
-                .sorted((entry1, entry2) -> entry2.getKey() - entry1.getKey()) //역순 정렬
+                .sorted(Map.Entry.comparingByKey())
                 .map(entry -> entry.getValue().getInfo())
                 .collect(Collectors.toList());
     }
@@ -53,7 +53,7 @@ public class QuoteService {
                 .orElse(0);
     }
     
-    public Quote findQuoteById(int targetId) {
+    private Quote findQuoteById(int targetId) {
         if(!quotes.containsKey(targetId)) {
             throw new QuoteNotFoundException(targetId);
         }

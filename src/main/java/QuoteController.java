@@ -61,7 +61,7 @@ public class QuoteController {
     
     private void handleRegister() {
         String[] ContentAndAuthor = quoteView.requestRegister();
-        int newId = quoteService.addQuote(ContentAndAuthor[0], ContentAndAuthor[1]);
+        int newId = quoteService.addQuote(ContentAndAuthor[1], ContentAndAuthor[0]);
         quoteView.alertSuccess(newId, Command.REGISTER);
     }
     
@@ -91,7 +91,7 @@ public class QuoteController {
     }
     
     private void handleSelect() {
-        quoteView.displayQuotes(quoteService.selectQuote());
+        quoteView.displayQuotes(quoteService.selectQuote().reversed());
     }
     
     private void handleBuild() {
