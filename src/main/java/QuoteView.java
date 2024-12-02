@@ -42,12 +42,14 @@ public class QuoteView {
     }
     
     public void alertSuccess(int id, Command command) {
-        printMessage(String.format(COMPLETE, id, command));
+        printMessage(String.format(COMPLETE, id, command.getValue()));
     }
     
     public void displayQuotes(List<String> quotesInfo) {
         printMessage(LIST_HEAD);
-        quotesInfo.forEach(quote -> printMessage(quote + "\n"));
+        quotesInfo.stream()
+                .sorted((a, b) -> quotesInfo.indexOf(b) - quotesInfo.indexOf(a))
+                .forEach(quote -> printMessage(quote + "\n"));
     }
     
     public void displayErrorMessage(String message) {
