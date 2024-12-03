@@ -1,8 +1,14 @@
+package controller;
+
+import constant.Command;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import repository.MapQuoteRepository;
+import service.QuoteService;
+import view.QuoteView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -23,7 +29,7 @@ class QuoteControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockQuoteService = new QuoteService(new QuoteRepository());
+        mockQuoteService = new QuoteService(new MapQuoteRepository());
         quoteController = new QuoteController(mockQuoteView, mockQuoteService);
         System.setOut(new PrintStream(outputStreamCaptor));
     }
@@ -35,7 +41,7 @@ class QuoteControllerTest {
     
     @Test
     void testRun_Exit() {
-        when(mockQuoteView.requestCommand()).thenReturn(Command.SELECT.getValue(), Command.SELECT.getValue(), Command.EXIT.getValue());
+        when(mockQuoteView.requestCommand()).thenReturn(Command.LIST.getValue(), Command.LIST.getValue(), Command.EXIT.getValue());
         
         quoteController.run();
     }
@@ -56,7 +62,7 @@ class QuoteControllerTest {
         String expectedAuthor = "작가명";
         
         when(mockQuoteView.requestCommand())
-                .thenReturn(Command.REGISTER.getValue())
+                .thenReturn(Command.ADD.getValue())
                 .thenReturn(Command.EXIT.getValue());
         when(mockQuoteView.requestRegister()).thenReturn(new String[]{expectedContent, expectedAuthor});
         
@@ -95,7 +101,7 @@ class QuoteControllerTest {
     
     @Test
     void testRun_Select() {
-        when(mockQuoteView.requestCommand()).thenReturn(Command.SELECT.getValue(), Command.EXIT.getValue());
+        when(mockQuoteView.requestCommand()).thenReturn(Command.LIST.getValue(), Command.EXIT.getValue());
         
         quoteController.run();
     }

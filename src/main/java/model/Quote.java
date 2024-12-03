@@ -1,3 +1,5 @@
+package model;
+
 public class Quote {
     private final int id;
     private String author;

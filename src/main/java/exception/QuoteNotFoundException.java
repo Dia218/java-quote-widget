@@ -1,3 +1,5 @@
+package exception;
+
 public class QuoteNotFoundException extends RuntimeException {
     private static final String ERROR_MESSAGE = "%d번 명언은 존재하지 않습니다.";
     

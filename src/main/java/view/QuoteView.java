@@ -1,3 +1,7 @@
+package view;
+
+import constant.Command;
+
 import java.util.List;
 import java.util.Scanner;
 

@@ -1,3 +1,6 @@
+package view;
+
+import constant.Command;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +57,7 @@ class QuoteViewTest {
         int expectedId = 1;
         System.setIn(new java.io.ByteArrayInputStream((expectedId + "\n").getBytes()));
         
-        String actualId = new QuoteView().requestTargetId(Command.REGISTER);
+        String actualId = new QuoteView().requestTargetId(Command.ADD);
         
         Assertions.assertEquals(String.valueOf(expectedId), actualId);
     }
@@ -92,7 +95,7 @@ class QuoteViewTest {
     void alertSuccess() {
         String expectedMessage = "1번 명언이 등록되었습니다.\n";
         
-        new QuoteView().alertSuccess(1, Command.REGISTER);
+        new QuoteView().alertSuccess(1, Command.ADD);
         
         Assertions.assertTrue(outputStreamCaptor.toString().contains(expectedMessage));
     }

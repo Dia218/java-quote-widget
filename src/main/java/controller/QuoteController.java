@@ -1,3 +1,13 @@
+package controller;
+
+import constant.Command;
+import exception.InvalidCommandException;
+import exception.InvalidNumberException;
+import exception.QuoteNotFoundException;
+import model.Quote;
+import service.QuoteService;
+import view.QuoteView;
+
 import java.util.Arrays;
 
 public class QuoteController {
@@ -42,8 +52,8 @@ public class QuoteController {
     }
     
     private void processCommand(String command) {
-        if (command.equals(Command.REGISTER.getValue())) {
-            handleRegister();
+        if (command.equals(Command.ADD.getValue())) {
+            handleAdd();
         }
         if (command.equals(Command.DELETE.getValue())) {
             handleDelete();
@@ -51,24 +61,24 @@ public class QuoteController {
         if (command.equals(Command.UPDATE.getValue())) {
             handleUpdate();
         }
-        if (command.equals(Command.SELECT.getValue())) {
-            handleSelect();
+        if (command.equals(Command.LIST.getValue())) {
+            handleList();
         }
         if (command.equals(Command.BUILD.getValue())) {
             handleBuild();
         }
     }
     
-    private void handleRegister() {
+    private void handleAdd() {
         String[] ContentAndAuthor = quoteView.requestRegister();
         int newId = quoteService.addQuote(ContentAndAuthor[1], ContentAndAuthor[0]);
-        quoteView.alertSuccess(newId, Command.REGISTER);
+        quoteView.alertSuccess(newId, Command.ADD);
     }
     
     private void handleDelete() {
         try {
             int targetId = parseToIntId(quoteView.requestTargetId(Command.DELETE));
-            quoteService.removeQuote(quoteService.getQuoteById(targetId));
+            quoteService.deleteQuote(quoteService.getQuoteById(targetId));
             quoteView.alertSuccess(targetId, Command.DELETE);
         } catch (InvalidNumberException | QuoteNotFoundException e) {
             quoteView.displayErrorMessage(e.getMessage());
@@ -86,12 +96,12 @@ public class QuoteController {
         }
     }
     
-    private void handleSelect() {
-        quoteView.displayQuotes(quoteService.selectQuote().reversed());
+    private void handleList() {
+        quoteView.displayQuotes(quoteService.listQuotes().reversed());
     }
     
     private void handleBuild() {
-        // 빌드 처리
+        quoteService.buildQuotes();
     }
     
     private int parseToIntId(String input) throws InvalidNumberException {
