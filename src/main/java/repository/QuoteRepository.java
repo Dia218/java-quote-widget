@@ -2,20 +2,15 @@ package repository;
 
 import model.Quote;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface QuoteRepository {
-    abstract void insertQuote(Quote quote);
-    
-    public void deleteQuote(int quoteId);
-    
-    public void updateQuote(Quote quote, String author, String content);
-    
-    public List<Quote> selectAllQuotes();
-    
-    public Quote selectQuoteById(int quoteId);
-    
-    public void commitQuotes();
-    
-    public int getLastId();
+    void insertQuote(Quote quote) throws IOException;
+    void deleteQuote(int quoteId) throws IOException;
+    void updateQuote(Quote quote, String author, String content) throws IOException;
+    List<Quote> selectAllQuotes() throws IOException;
+    Quote selectQuoteById(int quoteId) throws IOException;
+    void commitQuotes() throws IOException;
+    int getLastId() throws IOException;
 }

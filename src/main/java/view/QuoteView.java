@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class QuoteView {
     private final String TITLE = "== 명언 앱 ==\n";
     private final String COMMAND = "\n명령) ";
-    private final String ID_PROMPT = "%s?id=";
+    private final String ID_PROMPT = "%s할 id를 입력해주세요: ";
     private final String CONTENT = "명언%s : ";
     private final String AUTHOR = "작가%s : ";
     private final String PREVIOUS = "(기존)";

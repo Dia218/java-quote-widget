@@ -1,5 +1,5 @@
 import controller.QuoteController;
-import repository.MapQuoteRepository;
+import repository.JsonQuoteRepository;
 import repository.QuoteRepository;
 import service.QuoteService;
 import view.QuoteView;
@@ -7,7 +7,7 @@ import view.QuoteView;
 public class Application {
     public static void main(String[] args) {
         QuoteView quoteView = new QuoteView();
-        QuoteRepository quoteRepository = new MapQuoteRepository();
+        QuoteRepository quoteRepository = new JsonQuoteRepository();
         QuoteService quoteService = new QuoteService(quoteRepository);
         QuoteController controller = new QuoteController(quoteView, quoteService);
         

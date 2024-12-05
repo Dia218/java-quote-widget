@@ -3,6 +3,7 @@ package controller;
 import constant.Command;
 import exception.InvalidCommandException;
 import exception.InvalidNumberException;
+import exception.QuotesFileAccessException;
 import exception.QuoteNotFoundException;
 import model.Quote;
 import service.QuoteService;
@@ -70,9 +71,13 @@ public class QuoteController {
     }
     
     private void handleAdd() {
-        String[] ContentAndAuthor = quoteView.requestRegister();
-        int newId = quoteService.addQuote(ContentAndAuthor[1], ContentAndAuthor[0]);
-        quoteView.alertSuccess(newId, Command.ADD);
+        try {
+            String[] ContentAndAuthor = quoteView.requestRegister();
+            int newId = quoteService.addQuote(ContentAndAuthor[1], ContentAndAuthor[0]);
+            quoteView.alertSuccess(newId, Command.ADD);
+        } catch (QuotesFileAccessException e) {
+            quoteView.displayErrorMessage(e.getMessage());
+        }
     }
     
     private void handleDelete() {
@@ -80,7 +85,7 @@ public class QuoteController {
             int targetId = parseToIntId(quoteView.requestTargetId(Command.DELETE));
             quoteService.deleteQuote(quoteService.getQuoteById(targetId));
             quoteView.alertSuccess(targetId, Command.DELETE);
-        } catch (InvalidNumberException | QuoteNotFoundException e) {
+        } catch (InvalidNumberException | QuoteNotFoundException | QuotesFileAccessException e) {
             quoteView.displayErrorMessage(e.getMessage());
         }
     }
@@ -91,17 +96,25 @@ public class QuoteController {
             Quote targetQuote = quoteService.getQuoteById(targetId);
             String[] newContentAndAuthor = quoteView.requestUpdate(targetQuote.getContentAndAuthor());
             quoteService.updateQuote(targetQuote, newContentAndAuthor[1], newContentAndAuthor[0]);
-        } catch (InvalidNumberException | QuoteNotFoundException e) {
+        } catch (InvalidNumberException | QuoteNotFoundException | QuotesFileAccessException e) {
             quoteView.displayErrorMessage(e.getMessage());
         }
     }
     
     private void handleList() {
-        quoteView.displayQuotes(quoteService.listQuotes().reversed());
+        try {
+            quoteView.displayQuotes(quoteService.listQuotes().reversed());
+        } catch (QuotesFileAccessException e) {
+            quoteView.displayErrorMessage(e.getMessage());
+        }
     }
     
     private void handleBuild() {
-        quoteService.buildQuotes();
+        try {
+            quoteService.buildQuotes();
+        } catch (QuotesFileAccessException e) {
+            quoteView.displayErrorMessage(e.getMessage());
+        }
     }
     
     private int parseToIntId(String input) throws InvalidNumberException {

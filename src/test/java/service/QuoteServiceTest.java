@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import repository.MapQuoteRepository;
 import repository.QuoteRepository;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +30,7 @@ class QuoteServiceTest {
     }
     
     @Test
-    void testAddQuote() {
+    void testAddQuote() throws IOException {
         int id = quoteService.addQuote(AUTHOR_1, QUOTE_CONTENT_1);
         Quote actualQuote = quoteRepository.selectQuoteById(id);
         
@@ -40,7 +41,7 @@ class QuoteServiceTest {
     }
     
     @Test
-    void testDeleteQuote() {
+    void testDeleteQuote() throws IOException {
         int id = quoteService.addQuote(AUTHOR_1, QUOTE_CONTENT_1);
         Quote addedQuote = quoteRepository.selectQuoteById(id);
         quoteService.deleteQuote(addedQuote);
@@ -50,7 +51,7 @@ class QuoteServiceTest {
     }
     
     @Test
-    void testUpdateQuote() {
+    void testUpdateQuote() throws IOException {
         int id = quoteService.addQuote(AUTHOR_1, QUOTE_CONTENT_1);
         Quote addedQuote = quoteRepository.selectQuoteById(id);
 

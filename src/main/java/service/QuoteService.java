@@ -1,45 +1,74 @@
 package service;
 
+import exception.QuotesFileAccessException;
 import exception.QuoteNotFoundException;
 import model.Quote;
 import repository.QuoteRepository;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class QuoteService {
     private final QuoteRepository quoteRepository;
+    private static final Logger logger = Logger.getLogger(QuoteService.class.getName());
     
     public QuoteService(QuoteRepository quoteRepository) {
         this.quoteRepository = quoteRepository;
     }
     
-    public int addQuote(String author, String content) {
+    public int addQuote(String author, String content)  {
         int id = getNextId();
-        quoteRepository.insertQuote(new Quote(id, author, content));
+        try {
+            quoteRepository.insertQuote(new Quote(id, author, content));
+        } catch (IOException e) {
+            throw new QuotesFileAccessException("insert");
+        }
         return id;
     }
     
     public void deleteQuote(Quote quote) {
-        quoteRepository.deleteQuote(quote.getId());
+        try {
+            quoteRepository.deleteQuote(quote.getId());
+        } catch (IOException e) {
+            throw new QuotesFileAccessException("delete");
+        }
     }
     
     public void updateQuote(Quote quote, String author, String content) {
-        quoteRepository.updateQuote(quote, author, content);
+        try {
+            quoteRepository.updateQuote(quote, author, content);
+        } catch (IOException e) {
+            throw new QuotesFileAccessException("update");
+        }
     }
     
     public List<String> listQuotes() {
-        return quoteRepository.selectAllQuotes().stream()
-                .map(Quote::getInfo)
-                .collect(Collectors.toList());
+        try {
+            return quoteRepository.selectAllQuotes().stream()
+                    .map(Quote::getInfo)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new QuotesFileAccessException("list");
+        }
     }
     
     public void buildQuotes() {
-        quoteRepository.commitQuotes();
+        try {
+            quoteRepository.commitQuotes();
+        } catch (IOException e) {
+            throw new QuotesFileAccessException("build");
+        }
     }
     
     public Quote getQuoteById(int targetId) {
-        Quote quote = quoteRepository.selectQuoteById(targetId);
+        Quote quote = null;
+        try {
+            quote = quoteRepository.selectQuoteById(targetId);
+        } catch (IOException e) {
+            throw new QuotesFileAccessException("select");
+        }
         if (quote == null) {
             throw new QuoteNotFoundException(targetId);
         }
@@ -47,7 +76,11 @@ public class QuoteService {
     }
     
     private int getNextId() {
-        return quoteRepository.getLastId() + 1;
+        try {
+            return quoteRepository.getLastId() + 1;
+        } catch (IOException e) {
+            throw new QuotesFileAccessException("get last id");
+        }
     }
     
 }
