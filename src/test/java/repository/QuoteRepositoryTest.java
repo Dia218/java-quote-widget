@@ -38,12 +38,20 @@ class QuoteRepositoryTest {
     private void cleanUp() throws IOException {
         Files.deleteIfExists(Paths.get(DB_DIRECTORY + QUOTE_ID_3 + ".json"));
         Files.deleteIfExists(Paths.get(DB_DIRECTORY + QUOTE_ID_4 + ".json"));
+        
         Path path = Paths.get(DB_DIRECTORY + "lastId.txt");
         Files.deleteIfExists(path);
         
         if (!Files.exists(path)) {
             Files.createDirectories(path.getParent());
             Files.writeString(path, "2");
+        }
+        
+        path = Paths.get(DB_DIRECTORY + "data.json");
+        Files.deleteIfExists(path);
+        
+        if (!Files.exists(path)) {
+            quoteRepository.buildFile();
         }
     }
     
@@ -116,7 +124,22 @@ class QuoteRepositoryTest {
     }
     
     @Test
-    void testCommitQuotes() {
+    void testBuildFile() throws IOException {
+        Path jsonFilePath = Paths.get(DB_DIRECTORY + "data.json");
+        
+        Quote quote3 = new Quote(QUOTE_ID_3, AUTHOR_3, QUOTE_CONTENT_3);
+        Quote quote4 = new Quote(QUOTE_ID_4, AUTHOR_4, QUOTE_CONTENT_4);
+        quoteRepository.insertQuote(quote3);
+        quoteRepository.insertQuote(quote4);
+        quoteRepository.buildFile();
+        
+        assertTrue(Files.exists(jsonFilePath), "data.json 파일이 생성되지 않았습니다.");
+        
+        String jsonContent = new String(Files.readAllBytes(jsonFilePath));
+        assertTrue(jsonContent.contains(QUOTE_CONTENT_3), "명언 내용이 포함되지 않았습니다.");
+        assertTrue(jsonContent.contains(QUOTE_CONTENT_4), "명언 내용이 포함되지 않았습니다.");
+        assertTrue(jsonContent.startsWith("["), "파일의 시작이 '['가 아닙니다.");
+        assertTrue(jsonContent.endsWith("]"), "파일의 끝이 ']'가 아닙니다.");
     }
     
     @Test

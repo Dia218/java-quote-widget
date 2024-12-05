@@ -13,6 +13,7 @@ public class QuoteView {
     private final String AUTHOR = "작가%s : ";
     private final String PREVIOUS = "(기존)";
     private final String COMPLETE = "%d번 명언이 %s되었습니다.\n";
+    private final String BUILD_NOTIFICATION = "빌드가 완료되었습니다.\n";
     private final String LIST_HEAD = "번호 / 작가 / 명언\n" + "----------------------\n";
 
     private final Scanner scanner;
@@ -47,6 +48,10 @@ public class QuoteView {
     
     public void alertSuccess(int id, Command command) {
         printMessage(String.format(COMPLETE, id, command.getValue()));
+    }
+    
+    public void alertSuccess() {
+        printMessage(String.format(BUILD_NOTIFICATION));
     }
     
     public void displayQuotes(List<String> quotesInfo) {

@@ -56,7 +56,7 @@ public class QuoteService {
     
     public void buildQuotes() {
         try {
-            quoteRepository.commitQuotes();
+            quoteRepository.buildFile();
         } catch (IOException e) {
             throw new QuotesFileAccessException("build");
         }

@@ -112,6 +112,7 @@ public class QuoteController {
     private void handleBuild() {
         try {
             quoteService.buildQuotes();
+            quoteView.alertSuccess();
         } catch (QuotesFileAccessException e) {
             quoteView.displayErrorMessage(e.getMessage());
         }

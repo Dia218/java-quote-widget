@@ -47,7 +47,7 @@ public class MapQuoteRepository implements QuoteRepository {
     }
     
     @Override
-    public void commitQuotes() {
+    public void buildFile() {
     }
     
     @Override

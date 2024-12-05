@@ -11,6 +11,6 @@ public interface QuoteRepository {
     void updateQuote(Quote quote, String author, String content) throws IOException;
     List<Quote> selectAllQuotes() throws IOException;
     Quote selectQuoteById(int quoteId) throws IOException;
-    void commitQuotes() throws IOException;
+    void buildFile() throws IOException;
     int getLastId() throws IOException;
 }

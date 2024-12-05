@@ -17,6 +17,9 @@ public class JsonQuoteRepository implements QuoteRepository {
     
     @Override
     public void insertQuote(Quote quote) throws IOException {
+        if(quote.getId() != getLastId()+1) {
+            throw new IOException();
+        }
         String json = gson.toJson(quote);
         Path path = Paths.get(DB_DIRECTORY + quote.getId() + ".json");
         Files.createDirectories(path.getParent());
@@ -44,14 +47,7 @@ public class JsonQuoteRepository implements QuoteRepository {
     @Override
     public List<Quote> selectAllQuotes() throws IOException {
         List<Quote> quotes = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(DB_DIRECTORY))) {
-            for (Path entry : stream) {
-                if (entry.toString().endsWith(".json")) {
-                    Quote quote = gson.fromJson(new String(Files.readAllBytes(entry)), Quote.class);
-                    quotes.add(quote);
-                }
-            }
-        }
+        handleQuoteFiles(quotes);
         return quotes;
     }
     
@@ -65,9 +61,21 @@ public class JsonQuoteRepository implements QuoteRepository {
         return null;
     }
         
-        @Override
-    public void commitQuotes() {
-    
+    @Override
+    public void buildFile() throws IOException {
+        StringBuilder jsonBuilder = new StringBuilder();
+        jsonBuilder.append("[");
+        
+        handleQuoteFiles(jsonBuilder);
+        
+        if (jsonBuilder.length() > 1) {
+            jsonBuilder.deleteCharAt(jsonBuilder.length() - 1);
+        }
+        jsonBuilder.append("]");
+        
+        Path path = Paths.get(DB_DIRECTORY + "data.json");
+        Files.createDirectories(path.getParent());
+        Files.writeString(path, jsonBuilder.toString());
     }
     
     @Override
@@ -75,9 +83,32 @@ public class JsonQuoteRepository implements QuoteRepository {
         return Integer.parseInt(new String(Files.readAllBytes(Paths.get(DB_DIRECTORY + "lastId.txt"))));
     }
     
+    private void handleQuoteFiles(Object parameter) throws IOException {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(DB_DIRECTORY))) {
+            for (Path entry : stream) {
+                if (entry.getFileName().toString().matches("\\d+\\.json$")) {
+                    String quoteJson = new String(Files.readAllBytes(entry));
+                    handleJsonString(parameter, quoteJson);
+                }
+            }
+        }
+    }
+    
+    private void handleJsonString(Object parameter, String quoteJson) {
+        if (parameter instanceof List<?>) {
+            List<Quote> list = (List<Quote>) parameter;
+            list.add(gson.fromJson(quoteJson, Quote.class));
+        }
+        if(parameter instanceof StringBuilder jsonBuilder) {
+            jsonBuilder.append(quoteJson);
+            jsonBuilder.append(",");
+        }
+    }
+    
     private void updateLastId(int num) throws IOException {
         Path path = Paths.get(DB_DIRECTORY + "lastId.txt");
         int updatedId = Integer.parseInt(Files.readString(path).trim()) + num;
         Files.writeString(path, Integer.toString(updatedId));
     }
+
 }

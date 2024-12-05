@@ -6,7 +6,8 @@ public enum Command {
     UPDATE("수정"),
     LIST("목록"),
     EXIT("종료"),
-    BUILD("빌드"),;
+    BUILD("빌드"),
+    SEARCH("검색");
     
     private final String value;
     
